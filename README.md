@@ -1,4 +1,5 @@
 ***Projet mcp pour comfyui
+
 Testé avec un connecteur dev chatgpt
 
 Attention c'est une version en développement à but d'échange qui comporte des risques de sécurité notamment avec l'url, je suis en train de blinder avec un clé API et une bonne partie du code va changer.
