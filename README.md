@@ -24,7 +24,7 @@ serveur_mcp-comfyui/
 ### 1. Cloner le dépôt
 
 ```bash
-git clone https://github.com/ton-compte/serveur_mcp-comfyui.git
+git clone https://github.com/ton-compte/serveur_mcp-comfyui.git](https://github.com/orion4d/ComfyUI_mcp.git
 cd serveur_mcp-comfyui
 ```
 
