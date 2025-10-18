@@ -45,17 +45,6 @@ pip install -r requirements.txt
 ## 🧩 Fichier requirements.txt
 
 ```
-fastapi
-uvicorn
-aiohttp
-requests
-python-dotenv
-watchfiles
-fastmcp
-Pillow
-rembg
-```
-
 ## 🔐 Génération des clés et configuration
 
 ```bash
@@ -115,22 +104,16 @@ Le client (`ComfyUIClient`) communique via HTTP avec ton ComfyUI local :
 uvicorn server:mcp.http_app --reload
 ```
 
-### Tester la santé
+### Tester
 ```bash
 curl http://127.0.0.1:8000/debug/health
 ```
 
-## 🧰 Outils supplémentaires
+## 🧰 Outils
 
 - `create_custom_node_template()` → crée un squelette de node
 - `generate_key.py` → régénère un .env et des clés
 - `list_custom_subdir()` → liste les scripts d’un dossier custom node
-
-## 🧹 Nettoyage
-
-```bash
-rm -rf __pycache__ venv .env
-```
 
 ## 🏁 Licence
 
