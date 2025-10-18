@@ -14,9 +14,7 @@ serveur_mcp-comfyui/
 ├── comfyui_client.py       # Client HTTP vers ComfyUI
 ├── browser_controller.py   # Contrôle WebSocket vers extension Chrome
 ├── generate_key.py         # Générateur de clés (.env + sécurité)
-├── workflows/              # Dossiers de workflows JSON
-├── custom_nodes/           # Dossiers de nodes ComfyUI (lecture/écriture)
-└── .env / .env.example     # Configuration locale et template
+└── .env(à parametrer)    # Configuration locale et template
 ```
 
 ## ⚙️ Installation
