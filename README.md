@@ -14,7 +14,7 @@ serveur_mcp-comfyui/
 ├── comfyui_client.py       # Client HTTP vers ComfyUI
 ├── browser_controller.py   # Contrôle WebSocket vers extension Chrome
 ├── generate_key.py         # Générateur de clés (.env + sécurité)
-└── .env(à parametrer)    # Configuration locale et template
+└── .env(à parametrer)      # Configuration
 ```
 
 ## ⚙️ Installation
@@ -91,18 +91,10 @@ Le client (`ComfyUIClient`) communique via HTTP avec ton ComfyUI local :
 - Support des workflows UI et API
 - Auto-conversion via `_convert_ui_to_api()`
 
-## 🧩 Développement local
-
-### Recharger automatiquement le serveur
-```bash
-uvicorn server:mcp.http_app --reload
-```
-
 ### Tester
 ```bash
 curl http://127.0.0.1:8000/debug/health
 ```
-
 ## 🧰 Outils
 
 - `create_custom_node_template()` → crée un squelette de node
