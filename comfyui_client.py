@@ -19,7 +19,7 @@ class ComfyUIClient:
         self.base_url = base_url
         self.workflows_dir = Path(workflows_dir)
         self.available_models = self._get_available_models()
-
+    
     def _get_available_models(self):
         """Fetch list of available checkpoint models from ComfyUI"""
         try:
@@ -27,7 +27,6 @@ class ComfyUIClient:
             if response.status_code != 200:
                 logger.warning("Failed to fetch model list; using default handling")
                 return []
-            
             data = response.json()
             models = data["CheckpointLoaderSimple"]["input"]["required"]["ckpt_name"][0]
             logger.info(f"Available models: {len(models)} models found")
@@ -35,31 +34,28 @@ class ComfyUIClient:
         except Exception as e:
             logger.warning(f"Error fetching models: {e}")
             return []
-
+    
     def list_workflows(self):
         """Liste tous les workflows disponibles (récursif avec sous-dossiers)"""
         if not self.workflows_dir.exists():
             return []
-        
         workflows = []
         for json_file in self.workflows_dir.rglob("*.json"):
             relative_path = json_file.relative_to(self.workflows_dir)
             workflow_id = str(relative_path.with_suffix('')).replace('\\', '/')
             workflows.append(workflow_id)
-        
         return sorted(workflows)
-
+    
     def _is_ui_format(self, workflow: dict) -> bool:
         """Détecte si le workflow est au format UI ou API"""
         return "nodes" in workflow and "links" in workflow
-
+    
     def _convert_ui_to_api(self, ui_workflow: dict) -> dict:
         """
         Convertit un workflow UI ComfyUI en format API.
         Version améliorée qui gère correctement les widgets.
         """
         logger.info("Converting workflow from UI format to API format")
-        
         api_workflow = {}
         nodes = ui_workflow.get("nodes", [])
         links = ui_workflow.get("links", [])
@@ -77,7 +73,6 @@ class ComfyUIClient:
         for node in nodes:
             node_id = str(node["id"])
             node_type = node.get("type")
-            
             if not node_type:
                 logger.warning(f"Node {node_id} has no type, skipping")
                 continue
@@ -88,7 +83,6 @@ class ComfyUIClient:
             node_inputs = node.get("inputs", [])
             
             # 1. D'ABORD : Traiter les connections (links)
-            #    Ces inputs NE DOIVENT PAS être dans widgets_values
             for input_def in node_inputs:
                 link_id = input_def.get("link")
                 if link_id is not None and link_id in link_map:
@@ -98,21 +92,15 @@ class ComfyUIClient:
                         inputs[input_name] = [source_node_id, source_slot]
             
             # 2. ENSUITE : Traiter les widgets_values
-            #    Seulement pour les inputs qui ont un widget (pas de link)
             if "widgets_values" in node and node["widgets_values"]:
                 widgets = node["widgets_values"]
-                
-                # Filtrer les inputs qui sont des widgets (pas des connections)
                 widget_inputs = []
                 for input_def in node_inputs:
-                    # Si l'input a un widget ET n'a pas de link, c'est un widget
                     has_widget = input_def.get("widget") is not None
                     has_link = input_def.get("link") is not None
-                    
                     if has_widget and not has_link:
                         widget_inputs.append(input_def["name"])
                 
-                # Mapper les widgets_values aux bons input names
                 for i, value in enumerate(widgets):
                     if i < len(widget_inputs):
                         input_name = widget_inputs[i]
@@ -130,14 +118,13 @@ class ComfyUIClient:
         
         logger.info(f"Converted {len(api_workflow)} nodes from UI to API format")
         return api_workflow
-
+    
     def load_workflow(self, workflow_id: str) -> dict:
         """
         Charge un workflow et le convertit automatiquement si nécessaire.
         Supporte les sous-dossiers (ex: "flux/upscale")
         """
         workflow_path = self.workflows_dir / f"{workflow_id}.json"
-        
         if not workflow_path.exists():
             raise FileNotFoundError(f"Workflow '{workflow_id}' not found at {workflow_path}")
         
@@ -151,7 +138,7 @@ class ComfyUIClient:
         else:
             logger.info(f"Workflow '{workflow_id}' is already in API format")
             return workflow
-
+    
     def generate_image(self, prompt, width=512, height=512, workflow_id="basic_api_test", model=None):
         """
         Generate an image using ComfyUI with a predefined workflow.
@@ -194,8 +181,8 @@ class ComfyUIClient:
         response = requests.post(f"{self.base_url}/prompt", json=payload)
         response.raise_for_status()
         result = response.json()
-        
         prompt_id = result.get("prompt_id")
+        
         if not prompt_id:
             raise ValueError("No prompt_id returned from ComfyUI")
         
@@ -232,3 +219,72 @@ class ComfyUIClient:
             time.sleep(1)
         
         raise TimeoutError(f"Image generation timed out after {max_wait} seconds")
+    
+    def get_queue_info(self) -> dict:
+        """
+        Récupère les informations de la file d'attente ComfyUI
+        
+        Returns:
+            dict: État de la queue avec running et pending
+        """
+        try:
+            response = requests.get(f"{self.base_url}/queue")
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            logger.error(f"Erreur lors de la récupération de la queue: {e}")
+            return {"queue_running": [], "queue_pending": []}
+    
+    def get_object_info(self, node_class: str = None) -> dict:
+        """
+        Récupère les informations des nodes ComfyUI
+        
+        Args:
+            node_class: Classe spécifique à récupérer (optionnel)
+        
+        Returns:
+            dict: Informations sur les nodes disponibles
+        """
+        try:
+            if node_class:
+                response = requests.get(f"{self.base_url}/object_info/{node_class}")
+            else:
+                response = requests.get(f"{self.base_url}/object_info")
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            logger.error(f"Erreur lors de la récupération de object_info: {e}")
+            return {}
+    
+    def queue_prompt(self, workflow: dict) -> dict:
+        """Envoie un workflow à ComfyUI pour exécution"""
+        try:
+            payload = {"prompt": workflow}
+            response = requests.post(f"{self.base_url}/prompt", json=payload)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            logger.error(f"Erreur lors de l'envoi du workflow: {e}")
+            return {"status": "error", "message": str(e)}
+    
+    def get_history(self, prompt_id: str) -> dict:
+        """Récupère l'historique d'un prompt (outputs, status)"""
+        try:
+            resp = requests.get(f"{self.base_url}/history/{prompt_id}")
+            resp.raise_for_status()
+            return resp.json()
+        except Exception as e:
+            logger.error(f"Erreur get_history({prompt_id}): {e}")
+            return {"status": "error", "message": str(e)}
+    
+    async def get_system_stats(self) -> dict:
+        """Récupère les stats CPU, RAM, GPU du backend ComfyUI"""
+        import aiohttp
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"{self.base_url}/system_stats") as response:
+                    response.raise_for_status()
+                    return await response.json()
+        except Exception as e:
+            logger.error(f"Erreur lors de la récupération des stats système: {e}")
+            return {"status": "error", "message": str(e)}
