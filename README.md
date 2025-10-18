@@ -104,4 +104,3 @@ curl http://127.0.0.1:8000/debug/health
 ## 🏁 Licence
 
 MIT © 2025 — Projet personnel d’intégration **ComfyUI ↔ ChatGPT MCP**
-Non affilié à Stability AI ou OpenAI.
