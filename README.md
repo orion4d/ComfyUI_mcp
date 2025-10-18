@@ -1,10 +1,9 @@
 # 🧠 Serveur MCP pour ComfyUI (version dev)
 
 Ce projet expose **ComfyUI** via un serveur compatible **MCP (Model Context Protocol)**.
-Il permet :
-- d’utiliser ComfyUI depuis ChatGPT via un connecteur (mode dev)
-- de piloter l’interface ComfyUI dans Chrome via une extension WebSocket,
-- et de gérer workflows, nodes et échanges locaux.
+Il permet 
+- de piloter ComfyUI depuis ChatGPT via un connecteur (mode dev)
+- de piloter l’interface ComfyUI dans Chrome via une extension WebSocket (en cours)
 
 ## 📁 Structure du projet
 
