@@ -39,10 +39,6 @@ venv\Scripts\activate        # sous Windows
 ```bash
 pip install -r requirements.txt
 ```
-
-## 🧩 Fichier requirements.txt
-
-```
 ## 🔐 Génération des clés et configuration
 
 ```bash
