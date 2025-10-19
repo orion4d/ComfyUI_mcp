@@ -84,6 +84,44 @@ curl http://127.0.0.1:8000/debug/health
 ```
 # 📘 Commandes MCP–ComfyUI
 
+ComfyUI
+│
+├── 🧠 Exécution (moteur)
+│   ├─ /queue_prompt
+│   ├─ /get_queue_status
+│   ├─ /cancel_prompt
+│   ├─ /get_history
+│   └─ /interrupt_execution
+│
+├── ⚙️ Système & Modèles
+│   ├─ /get_system_stats
+│   ├─ /list_models
+│   └─ /model_info
+│
+├── 🧩 Workflows
+│   ├─ /save_workflow
+│   ├─ /load_workflow
+│   ├─ /list_workflows
+│   └─ /inspect_workflow
+│
+├── 🔧 Custom Nodes (→ ComfyUI/custom_nodes/)
+│   ├─ /create_custom_node_template
+│   ├─ /write_custom_node
+│   ├─ /read_custom_node
+│   ├─ /list_custom_subdir
+│   └─ /autodoc_nodes
+│
+├── 🖼️ Images
+│   ├─ /upload_image
+│   ├─ /get_image
+│   └─ /list_output_images
+│
+└── 📂 MCP_exchange (→ output/MCP_exchange/)
+    ├─ /list_exchange
+    ├─ /read_exchange
+    ├─ /write_exchange
+    └─ /delete_exchange
+
 ## 🧠 Exécution & File
 - **/queue_prompt** → exécuter un workflow
 - **/get_queue_status** → état de la file
