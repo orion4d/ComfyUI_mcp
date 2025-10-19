@@ -157,6 +157,57 @@ ComfyUI
 - **/read_exchange** → lire un fichier (texte ou image)
 - **/write_exchange** → écrire un fichier
 - **/delete_exchange** → supprimer un fichier
+- # 📂 MCP_exchange — Structure des Commandes
+
+Ce répertoire sert d’espace d’échange entre **MCP–ComfyUI** et ton environnement local.
+Toutes les commandes ci-dessous interagissent uniquement avec le dossier : `output/MCP_exchange/`
+
+---
+
+## 📜 Commandes disponibles
+
+### 🔍 Lister les fichiers
+```bash
+call_tool /MCP-ComfyUI/.../list_exchange {"limit": 200, "exts": "png,jpg,jpeg,webp,bmp,tif,tiff,txt,md,html,htm,json,js,py,css"}
+```
+Renvoie la liste des fichiers triés du plus récent au plus ancien.
+
+---
+
+### 📖 Lire un fichier
+```bash
+call_tool /MCP-ComfyUI/.../read_exchange {"name": "nom_du_fichier.txt", "as_data_url": true}
+```
+Permet de lire le contenu d’un fichier texte ou image.
+
+---
+
+### ✏️ Écrire un fichier
+```bash
+call_tool /MCP-ComfyUI/.../write_exchange {"name": "nouveau_fichier.md", "content": "contenu du fichier", "mode": "text", "overwrite": true}
+```
+Modes disponibles : `text`, `base64`, `data_url`.
+
+---
+
+### ❌ Supprimer un fichier
+```bash
+call_tool /MCP-ComfyUI/.../delete_exchange {"name": "fichier_a_supprimer.json"}
+```
+Efface le fichier du répertoire d’échange.
+
+---
+
+## 🧭 Usage typique
+- Exporter un résultat ou une image générée pour inspection.
+- Importer un script, un JSON de workflow ou un dataset.
+- Automatiser des échanges entre MCP et ComfyUI.
+
+---
+
+📍 **Chemin complet :** `ComfyUI/output/MCP_exchange/`
+
+> Les autres commandes (workflows, modèles, nœuds) agissent ailleurs ; ce groupe-ci se limite à la gestion des fichiers d’échange.
 
 ## 🖥️ Interface (Chrome UI)
 - **/ui_click_element** → simuler un clic
