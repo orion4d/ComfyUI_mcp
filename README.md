@@ -176,7 +176,7 @@ ComfyUI
 - **/ui_fill_input** → remplir un champ texte  
 - **/ui_get_current_workflow** → récupérer le workflow affiché  
 
----
+##
 
 ## 📂 Structure MCP_exchange
 
@@ -212,3 +212,4 @@ call_tool /MCP-ComfyUI/.../delete_exchange {"name": "fichier_a_supprimer.json"}
 
 **Chemin complet :** `ComfyUI/output/MCP_exchange/`  
 > Les autres commandes (workflows, modèles, nœuds) agissent ailleurs ; ce groupe-ci se limite à la gestion des fichiers d’échange.
+---
