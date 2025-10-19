@@ -5,17 +5,6 @@ Il permet
 - de piloter ComfyUI depuis ChatGPT via un connecteur (mode dev)
 - de piloter l’interface ComfyUI dans Chrome via une extension WebSocket (en cours)
 
-## 📁 Structure du projet
-
-```
-serveur_mcp-comfyui/
-├── server.py               # Serveur MCP principal (FastMCP / Uvicorn)
-├── comfyui_client.py       # Client HTTP vers ComfyUI
-├── browser_controller.py   # Contrôle WebSocket vers extension Chrome
-├── generate_key.py         # Générateur de clés (.env + sécurité)
-└── .env(à parametrer)      # Configuration
-```
-
 ## ⚙️ Installation
 
 ### 1. Cloner le dépôt
@@ -93,12 +82,45 @@ Le client (`ComfyUIClient`) communique via HTTP avec ton ComfyUI local :
 ```bash
 curl http://127.0.0.1:8000/debug/health
 ```
-## 🧰 Outils
+# 📘 Commandes MCP–ComfyUI
 
-- `create_custom_node_template()` → crée un squelette de node
-- `generate_key.py` → régénère un .env et des clés
-- `list_custom_subdir()` → liste les scripts d’un dossier custom node
+## 🧠 Exécution & File
+- **/queue_prompt** → exécuter un workflow
+- **/get_queue_status** → état de la file
+- **/get_history** → historique d’un prompt
+- **/cancel_prompt** → annuler un prompt
+- **/interrupt_execution** → stopper tout en cours
 
-## 🏁 Licence
+## ⚙️ Système & Modèles
+- **/get_system_stats** → infos GPU, RAM, versions
+- **/list_models** → lister les modèles disponibles
+- **/model_info** → détails d’un modèle
 
-MIT © 2025 — Projet personnel d’intégration **ComfyUI ↔ ChatGPT MCP**
+## 🧩 Workflows
+- **/save_workflow** → enregistrer un workflow
+- **/load_workflow** → charger un workflow
+- **/list_workflows** → lister tous les workflows
+- **/inspect_workflow** → analyser la structure
+
+## 🖼️ Images & Fichiers
+- **/list_output_images** → voir les images produites
+- **/get_image** → récupérer une image
+- **/upload_image** → envoyer une image d’entrée
+
+## 🔧 Custom Nodes
+- **/create_custom_node_template** → créer un squelette de node
+- **/write_custom_node** → écrire un fichier node
+- **/read_custom_node** → lire le code d’un node
+- **/list_custom_subdir** → explorer un dossier custom
+- **/autodoc_nodes** → générer la doc de tous les custom nodes
+
+## 📂 MCP Exchange
+- **/list_exchange** → lister les fichiers partagés
+- **/read_exchange** → lire un fichier (texte ou image)
+- **/write_exchange** → écrire un fichier
+- **/delete_exchange** → supprimer un fichier
+
+## 🖥️ Interface (Chrome UI)
+- **/ui_click_element** → simuler un clic
+- **/ui_fill_input** → remplir un champ texte
+- **/ui_get_current_workflow** → récupérer le workflow affiché
