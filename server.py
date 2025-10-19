@@ -350,17 +350,29 @@ def list_workflows() -> dict:
     workflows.sort(key=lambda w: w["name"])
     return {"status": "success", "workflows": workflows}
 
-
 @mcp.tool()
 def inspect_workflow(name: str) -> dict:
-    """Inspecte un workflow pour analyser sa structure (supporte sous-dossiers)"""
+    """
+    Inspecte un workflow pour analyser sa structure.
+    Supporte les sous-dossiers (ex: 'production/upscale').
+    
+    Args:
+        name: Nom du workflow avec ou sans .json (peut contenir des /)
+    
+    Returns:
+        Dict avec status, format (UI/API), nombre de nodes, etc.
+    """
+    # Protection contre path traversal
     if ".." in name or name.strip().startswith(("/", "\\")):
         return {"status": "error", "message": "Nom de workflow invalide"}
+    
     try:
+        # Nettoyer et construire le chemin sécurisé
         rel_path = Path(*[p for p in Path(name).parts if p not in ("", ".", "..")])
         wf_path = _safe_join(WORKFLOWS_DIR, str(rel_path.with_suffix(".json")))
     except Exception as e:
         return {"status": "error", "message": f"Chemin non autorisé: {e}"}
+    
     if not Path(wf_path).exists():
         return {"status": "error", "message": f"Workflow '{name}' introuvable"}
 
@@ -370,7 +382,7 @@ def inspect_workflow(name: str) -> dict:
     except Exception as e:
         return {"status": "error", "message": f"Lecture invalide: {e}"}
 
-    # Deux formats possibles : UI (nodes/links) ou API (prompt/nodes)
+    # Analyse du format (UI ou API)
     if isinstance(payload, dict) and "nodes" in payload and "links" in payload:
         info = {
             "format": "UI",
@@ -613,46 +625,6 @@ def autodoc_nodes() -> dict:
             data.append(entry)
     
     return {"status": "success", "custom_nodes": data}
-
-@mcp.tool()
-def inspect_workflow(name: str) -> dict:
-    """Inspecte un workflow pour analyser sa structure"""
-    safe_name = re.sub(r'[^a-zA-Z0-9_-]', '_', name)
-    wf_path = WORKFLOWS_DIR / f"{safe_name}.json"
-    
-    if not wf_path.exists():
-        return {"status": "error", "message": f"Workflow '{name}' introuvable"}
-    
-    try:
-        with open(wf_path, "r", encoding="utf-8") as f:
-            payload = json.load(f)
-    except Exception as e:
-        return {"status": "error", "message": f"Lecture invalide: {e}"}
-    
-    if isinstance(payload, dict) and "nodes" in payload and "links" in payload:
-        info = {
-            "format": "UI",
-            "nodes": len(payload.get("nodes", [])),
-            "links": len(payload.get("links", [])),
-            "path": str(wf_path)
-        }
-    else:
-        class_types = []
-        if isinstance(payload, dict):
-            graph = payload.get("prompt", payload)
-            if isinstance(graph, dict):
-                for node_id, node in graph.items():
-                    ct = node.get("class_type")
-                    if ct:
-                        class_types.append(ct)
-        info = {
-            "format": "API",
-            "nodes": len(class_types),
-            "class_types": class_types[:100],
-            "path": str(wf_path)
-        }
-    
-    return {"status": "success", "workflow": info}
 
 # Liste les images de COMFYUI_ROOT/output (hors MCP_exchange si tu veux tout)
 @mcp.tool()
