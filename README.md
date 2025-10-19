@@ -152,6 +152,11 @@ ComfyUI
 - **/list_custom_subdir** → explorer un dossier custom
 - **/autodoc_nodes** → générer la doc de tous les custom nodes
 
+## 🖥️ Interface (Chrome UI)
+- **/ui_click_element** → simuler un clic
+- **/ui_fill_input** → remplir un champ texte
+- **/ui_get_current_workflow** → récupérer le workflow affiché
+
 ## 📂 MCP Exchange
 - **/list_exchange** → lister les fichiers partagés
 - **/read_exchange** → lire un fichier (texte ou image)
@@ -166,7 +171,7 @@ Toutes les commandes ci-dessous interagissent uniquement avec le dossier : `outp
 
 ## 📜 Commandes disponibles
 
-### 🔍 Lister les fichiers
+# 🔍 Lister les fichiers
 ```bash
 call_tool /MCP-ComfyUI/.../list_exchange {"limit": 200, "exts": "png,jpg,jpeg,webp,bmp,tif,tiff,txt,md,html,htm,json,js,py,css"}
 ```
@@ -174,7 +179,7 @@ Renvoie la liste des fichiers triés du plus récent au plus ancien.
 
 ---
 
-### 📖 Lire un fichier
+# 📖 Lire un fichier
 ```bash
 call_tool /MCP-ComfyUI/.../read_exchange {"name": "nom_du_fichier.txt", "as_data_url": true}
 ```
@@ -190,7 +195,7 @@ Modes disponibles : `text`, `base64`, `data_url`.
 
 ---
 
-### ❌ Supprimer un fichier
+# ❌ Supprimer un fichier
 ```bash
 call_tool /MCP-ComfyUI/.../delete_exchange {"name": "fichier_a_supprimer.json"}
 ```
@@ -198,7 +203,7 @@ Efface le fichier du répertoire d’échange.
 
 ---
 
-## 🧭 Usage typique
+# 🧭 Usage typique
 - Exporter un résultat ou une image générée pour inspection.
 - Importer un script, un JSON de workflow ou un dataset.
 - Automatiser des échanges entre MCP et ComfyUI.
@@ -209,7 +214,3 @@ Efface le fichier du répertoire d’échange.
 
 > Les autres commandes (workflows, modèles, nœuds) agissent ailleurs ; ce groupe-ci se limite à la gestion des fichiers d’échange.
 
-## 🖥️ Interface (Chrome UI)
-- **/ui_click_element** → simuler un clic
-- **/ui_fill_input** → remplir un champ texte
-- **/ui_get_current_workflow** → récupérer le workflow affiché
