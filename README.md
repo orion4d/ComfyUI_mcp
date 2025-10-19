@@ -1,4 +1,4 @@
-# 🧠 Serveur MCP pour ComfyUI (version dev)
+# 🧠 Serveur MCP pour ComfyUI (Attention actuellement en construction)
 
 Ce projet expose **ComfyUI** via un serveur compatible **MCP (Model Context Protocol)**.
 Il permet 
