@@ -6,11 +6,11 @@ Ce projet expose **ComfyUI** via un serveur compatible **MCP (Model Context Prot
 
 Il permet :  
 - de piloter **ComfyUI** depuis ChatGPT via un connecteur (mode dev) ;  
-- de piloter l’interface **ComfyUI** dans Chrome via une extension WebSocket (en cours).
+- de piloter l’interface **ComfyUI** dans Chrome via une extension WebSocket.
 
 <img width="517" height="645" alt="image" src="https://github.com/user-attachments/assets/c3dbd461-626f-4ece-b336-b3367e386454" />
 
-### Pour bientôt : interfaces Gradio pour Ollama et Google CLI
+### Pour bientôt : en local, interfaces Gradio pour Ollama et Google CLI
 
 ---
 
