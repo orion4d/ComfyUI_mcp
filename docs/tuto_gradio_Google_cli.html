@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Interface Gradio + Google Gemini - ComfyUI MCP</title>
+<style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc05 75%, #ea4335 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 5px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        h2 { 
+            color: #4285f4; 
+            margin: 30px 0 15px 0;
+            font-size: 1.8em;
+            border-bottom: 2px solid #4285f4;
+            padding-bottom: 10px;
+        }
+        h3 { 
+            color: #34a853; 
+            margin: 20px 0 10px 0;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .step {
+            background: linear-gradient(90deg, #4285f4 0%, #34a853 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 20px 0 10px 0;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #4285f4;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        li {
+            margin: 10px 0;
+        }
+        .icon { font-size: 1.5em; margin-right: 10px; }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #4285f4;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #357ae8;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>🤖 Interface Gradio + Google Gemini</h1>
+<p>Chatbot Cloud avec Outils ComfyUI MCP</p>
+<div>
+<span class="badge">🆓 API Gratuite</span>
+<span class="badge">☁️ Cloud</span>
+<span class="badge">⚡ Très Rapide</span>
+<span class="badge">🎯 Débutant</span>
+</div>
+</header>
+<div class="info-box">
+<h3><span class="icon">ℹ️</span>Qu'est-ce que cette méthode ?</h3>
+<p>Cette interface utilise <strong>Google Gemini</strong> (IA cloud de Google) avec support MCP natif pour contrôler votre serveur ComfyUI local. Gemini appelle automatiquement les outils MCP sans code complexe.</p>
+<p><strong>Avantages</strong> : API gratuite (1500 req/jour), multimodal, automatic function calling, très performant</p>
+<p><strong>Inconvénients</strong> : Nécessite connexion Internet, API key Google requise</p>
+</div>
+<div class="card">
+<h2>📋 Prérequis</h2>
+<ul>
+<li>✅ Python 3.8+ installé</li>
+<li>✅ Serveur MCP ComfyUI configuré</li>
+<li>✅ Connexion Internet stable</li>
+<li>✅ Compte Google (gratuit)</li>
+</ul>
+</div>
+<div class="card">
+<h2>🔑 Obtenir une Clé API Google Gemini (GRATUIT)</h2>
+<div class="step">Étape 1 : Créer une Clé API</div>
+<ol>
+<li>Allez sur <strong><a href="https://aistudio.google.com/" target="_blank">Google AI Studio</a></strong></li>
+<li>Connectez-vous avec votre compte Google</li>
+<li>Cliquez sur <strong>"Get API Key"</strong> dans le menu de gauche</li>
+<li>Cliquez sur <strong>"Create API Key"</strong></li>
+<li>Sélectionnez votre projet Google Cloud (ou créez-en un)</li>
+<li>Copiez la clé générée (format : <code>AIzaSy...</code>)</li>
+</ol>
+<div class="success-box">
+<h3><span class="icon">🎉</span>API Gratuite !</h3>
+<p>Le tier gratuit de Google Gemini offre :</p>
+<ul>
+<li>✅ <strong>1500 requêtes par jour</strong></li>
+<li>✅ <strong>15 requêtes par minute</strong></li>
+<li>✅ Accès aux modèles Gemini 2.5 Flash et Pro</li>
+<li>✅ Support multimodal (texte, images, audio)</li>
+<li>✅ Function calling illimité</li>
+</ul>
+</div>
+<div class="step">Étape 2 : Configurer la Clé API</div>
+<h3>Sur Linux / macOS</h3>
+<pre># Ajouter à ~/.bashrc ou ~/.zshrc
+export GEMINI_API_KEY="AIzaSy...votre-clé"
+
+# Recharger la configuration
+source ~/.bashrc  # ou ~/.zshrc</pre>
+<h3>Sur Windows (PowerShell)</h3>
+<pre># Temporaire (session actuelle uniquement)
+$env:GEMINI_API_KEY="AIzaSy...votre-clé"
+
+# Permanent (système)
+[System.Environment]::SetEnvironmentVariable('GEMINI_API_KEY', 'AIzaSy...votre-clé', 'User')</pre>
+<h3>Via fichier .env (Recommandé)</h3>
+<pre># Dans le dossier clients/gradio_google/
+# Créer un fichier .env
+
+GEMINI_API_KEY=AIzaSy...votre-clé</pre>
+<div class="warning-box">
+<strong>⚠️ Sécurité</strong> : Ne jamais commiter votre clé API dans Git !
+                <pre># Ajouter dans .gitignore
+.env
+*.key</pre>
+</div>
+</div>
+<div class="card">
+<h2>🚀 Installation</h2>
+<div class="step">Étape 1 : Installer le Serveur MCP</div>
+<pre># Cloner le projet
+git clone https://github.com/orion4d/ComfyUI_mcp.git
+cd ComfyUI_mcp
+
+# Créer l'environnement virtuel
+python -m venv venv
+
+# Activer l'environnement
+# Windows :
+venv\Scripts\activate
+# macOS/Linux :
+source venv/bin/activate
+
+# Installer les dépendances
+pip install -r requirements.txt
+
+# Générer les clés de sécurité
+python generate_key.py</pre>
+<div class="step">Étape 2 : Installer l'Interface Gradio Google</div>
+<pre># Aller dans le dossier de l'interface
+cd clients/gradio_google
+
+# Installer les dépendances spécifiques
+pip install -r requirements.txt</pre>
+<div class="success-box">
+<strong>✅ Packages installés</strong> :
+                <ul>
+<li>gradio</li>
+<li>google-genai (SDK officiel Gemini)</li>
+<li>fastmcp (client MCP)</li>
+<li>python-dotenv (pour .env)</li>
+</ul>
+</div>
+<div class="step">Étape 3 : Configurer la Clé API</div>
+<pre># Créer le fichier .env dans clients/gradio_google/
+GEMINI_API_KEY=votre-clé-ici</pre>
+</div>
+<div class="card">
+<h2>▶️ Démarrage</h2>
+<div class="step">Étape 1 : Démarrer le Serveur MCP</div>
+<pre># Dans un terminal (à la racine du projet)
+cd ComfyUI_mcp
+python server.py
+
+# Vous devriez voir :
+# INFO:     Uvicorn running on http://127.0.0.1:8000</pre>
+<div class="step">Étape 2 : Lancer l'Interface Gradio Google</div>
+<pre># Dans un autre terminal
+cd ComfyUI_mcp/clients/gradio_google
+python app.py
+
+# L'interface démarre sur :
+# Running on local URL:  http://127.0.0.1:7860</pre>
+<div class="success-box">
+<h3><span class="icon">✅</span>Interface Prête !</h3>
+<p>Ouvrez votre navigateur : <strong>http://127.0.0.1:7860</strong></p>
+<p>L'interface se connecte automatiquement à Gemini et à votre serveur MCP.</p>
+</div>
+</div>
+<div class="card">
+<h2>💬 Utilisation</h2>
+<h3>Fonctionnalités Uniques de Gemini</h3>
+<div class="info-box">
+<h4>🤖 Automatic Function Calling</h4>
+<p>Gemini décide automatiquement quand utiliser les outils MCP. Pas besoin de dire "utilise l'outil X".</p>
+<pre>Vous : "Montre-moi mes workflows"
+Gemini : [Appelle automatiquement list_workflows] "Voici vos workflows..."</pre>
+</div>
+<div class="info-box">
+<h4>🧠 Thinking Mode</h4>
+<p>Gemini 2.5 "réfléchit" avant d'agir, améliorant la précision des appels d'outils.</p>
+</div>
+<div class="info-box">
+<h4>🔄 Compositional Calling</h4>
+<p>Gemini peut enchaîner plusieurs outils automatiquement.</p>
+<pre>Vous : "Crée un node qui traite les images puis queue un prompt avec"
+Gemini : 
+  1. [Appelle create_custom_node_template]
+  2. [Appelle write_custom_node]
+  3. [Appelle queue_prompt]</pre>
+</div>
+<h3>Exemples de Questions</h3>
+<ul>
+<li>"Liste tous mes workflows ComfyUI"</li>
+<li>"Analyse le code de mon custom node 'mon_node.py'"</li>
+<li>"Crée-moi un nouveau workflow pour de l'upscaling"</li>
+<li>"Quelle est la dernière génération dans l'historique ?"</li>
+<li>"Compare deux workflows et dis-moi les différences"</li>
+</ul>
+<h3>Mode Multimodal</h3>
+<div class="success-box">
+<p>Gemini peut analyser des images ! (fonctionnalité à implémenter dans l'interface)</p>
+<pre>Vous : [Upload une image] "Crée un workflow ComfyUI pour reproduire ce style"
+Gemini : [Analyse l'image] [Utilise les outils MCP] "J'ai créé le workflow..."</pre>
+</div>
+</div>
+<div class="card">
+<h2>⚙️ Configuration Avancée</h2>
+<h3>Changer de Modèle Gemini</h3>
+<pre># Dans app.py (ligne ~14)
+GEMINI_MODEL = "gemini-2.5-flash"  # Défaut (rapide, gratuit)
+
+# Alternatives :
+GEMINI_MODEL = "gemini-2.5-pro"    # Plus puissant, moins rapide
+GEMINI_MODEL = "gemini-2.0-flash"  # Ancienne version</pre>
+<table>
+<thead>
+<tr>
+<th>Modèle</th>
+<th>Vitesse</th>
+<th>Qualité</th>
+<th>Quota Gratuit</th>
+</tr>
+</thead>
+<tbody>
+<tr style="background: #d4edda;">
+<td><code>gemini-2.5-flash</code></td>
+<td>⚡⚡⚡⚡⚡</td>
+<td>⭐⭐⭐⭐</td>
+<td>1500/jour (Recommandé)</td>
+</tr>
+<tr>
+<td><code>gemini-2.5-pro</code></td>
+<td>⚡⚡⚡</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>50/jour</td>
+</tr>
+<tr>
+<td><code>gemini-2.0-flash</code></td>
+<td>⚡⚡⚡⚡</td>
+<td>⭐⭐⭐</td>
+<td>1500/jour</td>
+</tr>
+</tbody>
+</table>
+<h3>Contrôler l'Utilisation des Outils</h3>
+<pre># Dans app.py, ajouter dans la config :
+config = types.GenerateContentConfig(
+    temperature=0.7,
+    tools=[mcp_client.session],
+    tool_config=types.ToolConfig(
+        function_calling_config=types.FunctionCallingConfig(
+            mode="AUTO"  # "AUTO", "ANY", ou "NONE"
+        )
+    )
+)</pre>
+<ul>
+<li><strong>AUTO</strong> : Gemini décide (défaut, recommandé)</li>
+<li><strong>ANY</strong> : Force l'utilisation d'un outil</li>
+<li><strong>NONE</strong> : Désactive temporairement les outils</li>
+</ul>
+<h3>Limiter les Outils Disponibles</h3>
+<pre># Autoriser uniquement certains outils
+tool_config=types.ToolConfig(
+    function_calling_config=types.FunctionCallingConfig(
+        mode="AUTO",
+        allowed_function_names=[
+            "list_workflows",
+            "queue_prompt",
+            "get_history"
+        ]
+    )
+)</pre>
+</div>
+<div class="card">
+<h2>❓ Dépannage</h2>
+<h3>❌ Erreur : "Invalid API Key"</h3>
+<div class="warning-box">
+<p><strong>Problème</strong> : Clé API incorrecte ou non configurée</p>
+<p><strong>Solutions</strong> :</p>
+<ol>
+<li>Vérifier que la clé dans <code>.env</code> est correcte (format : <code>AIzaSy...</code>)</li>
+<li>Tester la clé manuellement :
+                        <pre>curl "https://generativelanguage.googleapis.com/v1beta/models?key=VOTRE_CLE"</pre>
+</li>
+<li>Régénérer une nouvelle clé sur AI Studio</li>
+</ol>
+</div>
+<h3>❌ Erreur : "Quota exceeded"</h3>
+<div class="warning-box">
+<p><strong>Problème</strong> : Limite de 1500 requêtes/jour atteinte</p>
+<p><strong>Solutions</strong> :</p>
+<ul>
+<li>Attendre 24h pour reset</li>
+<li>Utiliser une autre clé API (compte Google différent)</li>
+<li>Passer à l'offre payante (très peu cher)</li>
+</ul>
+</div>
+<h3>❌ Les outils MCP ne sont pas détectés</h3>
+<div class="warning-box">
+<p><strong>Problème</strong> : Serveur MCP non accessible</p>
+<p><strong>Solutions</strong> :</p>
+<ol>
+<li>Vérifier que le serveur MCP tourne : <code>python server.py</code></li>
+<li>Tester l'endpoint : <code>curl http://127.0.0.1:8000/debug/health</code></li>
+<li>Vérifier l'URL dans <code>app.py</code> (ligne 15)</li>
+</ol>
+</div>
+<h3>❌ Erreur : "Connection timeout"</h3>
+<div class="warning-box">
+<p><strong>Problème</strong> : Connexion Internet instable</p>
+<p><strong>Solutions</strong> :</p>
+<ul>
+<li>Vérifier votre connexion Internet</li>
+<li>Essayer un autre réseau</li>
+<li>Augmenter le timeout dans le code</li>
+</ul>
+</div>
+</div>
+<div class="card">
+<h2>💰 Tarification Google Gemini</h2>
+<h3>Tier Gratuit (données indicatives susceptibles de changements)</h3>
+<table>
+<thead>
+<tr>
+<th>Limite</th>
+<th>Gemini 2.5 Flash</th>
+<th>Gemini 2.5 Pro</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Requêtes par jour</td>
+<td>1500</td>
+<td>50</td>
+</tr>
+<tr>
+<td>Requêtes par minute</td>
+<td>15</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Tokens par minute</td>
+<td>1 million</td>
+<td>32 000</td>
+</tr>
+</tbody>
+</table>
+<h3>Tier Payant (données indicatives susceptibles de changements)</h3>
+<div class="info-box">
+<p>Si vous dépassez les quotas gratuits :</p>
+<ul>
+<li><strong>Gemini 2.5 Flash</strong> : $0.075 / million de tokens input, $0.30 / million output</li>
+<li><strong>Gemini 2.5 Pro</strong> : $1.25 / million tokens input, $5.00 / million output</li>
+</ul>
+<p><em>💡 En pratique : ~0.01€ pour 100 conversations avec outils MCP</em></p>
+</div>
+</div>
+<div class="card">
+<h2>🆚 Gemini vs Ollama</h2>
+<table>
+<thead>
+<tr>
+<th>Critère</th>
+<th>Gemini (Google)</th>
+<th>Ollama (Local)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Coût</strong></td>
+<td>🟢 Gratuit (1500/jour)</td>
+<td>🟢 100% Gratuit</td>
+</tr>
+<tr>
+<td><strong>Vitesse</strong></td>
+<td>🟢 Très rapide (cloud)</td>
+<td>🟡 Dépend du GPU/CPU</td>
+</tr>
+<tr>
+<td><strong>Qualité</strong></td>
+<td>🟢 Excellente</td>
+<td>🟡 Bonne (varie selon modèle)</td>
+</tr>
+<tr>
+<td><strong>Function Calling</strong></td>
+<td>🟢 Automatique et précis</td>
+<td>🟡 Nécessite bon modèle</td>
+</tr>
+<tr>
+<td><strong>Confidentialité</strong></td>
+<td>🔴 Données envoyées à Google</td>
+<td>🟢 100% privé</td>
+</tr>
+<tr>
+<td><strong>Internet</strong></td>
+<td>🔴 Requis</td>
+<td>🟢 Fonctionne hors ligne</td>
+</tr>
+<tr>
+<td><strong>Multimodal</strong></td>
+<td>🟢 Images, audio, vidéo</td>
+<td>🟡 Selon modèle (llama3.2-vision)</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+
+<footer style="text-align: center; margin: 40px 0 20px 0; color: #666;">
+<p>ComfyUI MCP Server © 2025</p>
+</footer>
+</div>
+</body>
+</html>
