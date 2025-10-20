@@ -1,5 +1,7 @@
 # 🧠 Serveur MCP pour ComfyUI (Version Alpha-1)
 
+<img width="2208" height="1235" alt="image" src="https://github.com/user-attachments/assets/11c256ce-f054-49b0-a8c8-52a1675968b7" />
+
 Ce projet expose **ComfyUI** via un serveur compatible **MCP (Model Context Protocol)**.
 
 Il permet :  
