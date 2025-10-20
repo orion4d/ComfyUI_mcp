@@ -1,10 +1,16 @@
-# 🧠 Serveur MCP pour ComfyUI (En construction)
+# 🧠 Serveur MCP pour ComfyUI (Version Alpha-1)
+
+<img width="2208" height="1235" alt="image" src="https://github.com/user-attachments/assets/11c256ce-f054-49b0-a8c8-52a1675968b7" />
 
 Ce projet expose **ComfyUI** via un serveur compatible **MCP (Model Context Protocol)**.
 
 Il permet :  
 - de piloter **ComfyUI** depuis ChatGPT via un connecteur (mode dev) ;  
-- de piloter l’interface **ComfyUI** dans Chrome via une extension WebSocket (en cours).
+- de piloter l’interface **ComfyUI** dans Chrome via une extension WebSocket.
+
+<img width="517" height="645" alt="image" src="https://github.com/user-attachments/assets/c3dbd461-626f-4ece-b336-b3367e386454" />
+
+### Pour bientôt : en local, interfaces Gradio pour Ollama et Google CLI
 
 ---
 
