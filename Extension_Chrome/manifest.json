@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "MCP ComfyUI Controller",
+  "version": "1.0",
+  "description": "Connecte ComfyUI au serveur MCP local via WebSocket sécurisé.",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "scripting",
+    "tabs",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8188/*",
+    "http://localhost:8188/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src ws://127.0.0.1:* ws://localhost:* wss://*.trycloudflare.com wss://*.ngrok.io wss://*.loca.lt;"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

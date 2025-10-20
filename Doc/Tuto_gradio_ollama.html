@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Interface Gradio + Ollama - ComfyUI MCP</title>
+<style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 5px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        h2 { 
+            color: #667eea; 
+            margin: 30px 0 15px 0;
+            font-size: 1.8em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        h3 { 
+            color: #764ba2; 
+            margin: 20px 0 10px 0;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .step {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 20px 0 10px 0;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #667eea;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        li {
+            margin: 10px 0;
+        }
+        .icon { font-size: 1.5em; margin-right: 10px; }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>🦙 Interface Gradio + Ollama</h1>
+<p>Chatbot 100% Local avec Outils ComfyUI</p>
+<div>
+<span class="badge">🟢 100% Gratuit</span>
+<span class="badge">🔒 100% Local</span>
+<span class="badge">⚡ Rapide</span>
+<span class="badge">🎯 Débutant</span>
+</div>
+</header>
+<div class="info-box">
+<h3><span class="icon">ℹ️</span>Qu'est-ce que cette méthode ?</h3>
+<p>Cette interface vous permet de discuter avec un modèle IA <strong>entièrement local</strong> (Ollama) qui peut utiliser les outils de votre serveur MCP ComfyUI. Tout fonctionne sur votre machine, aucune connexion Internet requise après l'installation.</p>
+<p><strong>Avantages</strong> : Gratuit, privé, rapide, fonctionne hors ligne</p>
+<p><strong>Inconvénients</strong> : Nécessite un GPU/CPU puissant pour les gros modèles</p>
+</div>
+<div class="card">
+<h2>📋 Prérequis</h2>
+<table>
+<thead>
+<tr>
+<th>Composant</th>
+<th>Version Minimale</th>
+<th>Recommandation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Python</strong></td>
+<td>3.8+</td>
+<td>3.10 à 3.12</td>
+</tr>
+<tr>
+<td><strong>RAM</strong></td>
+<td>8 GB</td>
+<td>16 GB ou plus</td>
+</tr>
+<tr>
+<td><strong>GPU</strong></td>
+<td>Optionnel</td>
+<td>NVIDIA avec 6GB+ VRAM</td>
+</tr>
+<tr>
+<td><strong>Espace Disque</strong></td>
+<td>10 GB</td>
+<td>20 GB (pour plusieurs modèles)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="card">
+<h2>🚀 Installation Pas à Pas</h2>
+<div class="step">Étape 1 : Installer Ollama</div>
+<h3>Sur Windows</h3>
+<pre># Télécharger et installer depuis le site officiel
+https://ollama.com/download/windows
+
+# Ou via winget
+winget install Ollama.Ollama</pre>
+<h3>Sur macOS</h3>
+<pre># Télécharger et installer depuis le site officiel
+https://ollama.com/download/mac
+
+# Ou via Homebrew
+brew install ollama</pre>
+<h3>Sur Linux</h3>
+<pre># Installation automatique
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Démarrer le service
+sudo systemctl start ollama
+sudo systemctl enable ollama</pre>
+<div class="success-box">
+<strong>✅ Vérification</strong> : Ouvrir un terminal et taper :
+                <pre>ollama --version</pre>
+                Vous devriez voir la version d'Ollama s'afficher.
+            </div>
+<div class="step">Étape 2 : Télécharger un Modèle IA</div>
+<p>Choisissez un modèle selon votre matériel (exemples) :</p>
+<table>
+<thead>
+<tr>
+<th>Modèle</th>
+<th>Taille</th>
+<th>RAM Requise</th>
+<th>Function Calling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>qwen2.5:3b</code></td>
+<td>2 GB</td>
+<td>4 GB</td>
+<td>✅ Oui</td>
+</tr>
+<tr>
+<td><code>qwen2.5:7b</code></td>
+<td>4.7 GB</td>
+<td>8 GB</td>
+<td>✅ Oui (Recommandé)</td>
+</tr>
+<tr>
+<td><code>qwen2.5:14b</code></td>
+<td>9 GB</td>
+<td>16 GB</td>
+<td>✅ Excellent</td>
+</tr>
+<tr>
+<td><code>llama3.2:3b</code></td>
+<td>2 GB</td>
+<td>4 GB</td>
+<td>✅ Oui</td>
+</tr>
+<tr>
+<td><code>mistral:7b</code></td>
+<td>4.1 GB</td>
+<td>8 GB</td>
+<td>✅ Oui</td>
+</tr>
+<tr>
+<td><code>granite3.1-dense:8b</code></td>
+<td>4.9 GB</td>
+<td>8 GB</td>
+<td>✅ Excellent</td>
+</tr>
+</tbody>
+</table>
+<h3>Télécharger le modèle (exemple : qwen2.5:7b)</h3>
+<pre># Dans un terminal
+ollama pull qwen2.5:7b
+
+# Attendre le téléchargement (peut prendre plusieurs minutes)
+# Tester le modèle
+ollama run qwen2.5:7b "Bonjour, peux-tu te présenter ?"</pre>
+<div class="warning-box">
+<strong>⚠️ Important</strong> : Les modèles de moins de 3B de paramètres sont moins performants pour le function calling. Privilégiez des modèles performants si votre machine le permet.
+            </div>
+<div class="step">Étape 3 : Installer le Serveur MCP ComfyUI</div>
+<pre># Cloner le projet
+git clone https://github.com/orion4d/ComfyUI_mcp.git
+cd ComfyUI_mcp
+
+# Créer l'environnement virtuel
+python -m venv venv
+
+# Activer l'environnement
+# Windows :
+venv\Scripts\activate
+# macOS/Linux :
+source venv/bin/activate
+
+# Installer les dépendances
+pip install -r requirements.txt
+
+# Générer les clés de sécurité
+python generate_key.py</pre>
+<div class="step">Étape 4 : Installer l'Interface Gradio Ollama</div>
+<pre># Aller dans le dossier de l'interface
+cd clients/gradio_ollama
+
+# Installer les dépendances spécifiques
+pip install -r requirements.txt</pre>
+<div class="success-box">
+<strong>✅ Vérification</strong> : Les packages suivants doivent être installés :
+                <ul>
+<li>gradio</li>
+<li>openai (pour l'API Ollama compatible)</li>
+<li>requests</li>
+</ul>
+</div>
+</div>
+<div class="card">
+<h2>▶️ Démarrage</h2>
+<div class="step">Étape 1 : Démarrer le Serveur MCP</div>
+<pre># Dans un terminal (à la racine du projet)
+cd ComfyUI_mcp
+python server.py
+
+# Vous devriez voir :
+# INFO:     Uvicorn running on http://127.0.0.1:8000</pre>
+<div class="step">Étape 2 : Vérifier qu'Ollama est Actif</div>
+<pre># Dans un autre terminal
+ollama serve
+
+# Si Ollama est déjà actif, vous verrez :
+# Error: listen tcp 127.0.0.1:11434: bind: address already in use
+# (C'est normal et bon signe !)</pre>
+<div class="step">Étape 3 : Lancer l'Interface Gradio</div>
+<pre># Dans un troisième terminal
+cd ComfyUI_mcp/clients/gradio_ollama
+python app.py
+
+# L'interface démarre sur :
+# Running on local URL:  http://127.0.0.1:7860</pre>
+<div class="success-box">
+<h3><span class="icon">✅</span>Prêt à Utiliser !</h3>
+<p>Ouvrez votre navigateur et allez sur : <strong>http://127.0.0.1:7860</strong></p>
+<p>Vous devriez voir l'interface de chat avec la liste des outils MCP disponibles sur le côté.</p>
+</div>
+</div>
+<div class="card">
+<h2>💬 Utilisation</h2>
+<h3>Exemples de Questions</h3>
+<div class="info-box">
+<ul>
+<li>"Liste tous mes workflows ComfyUI disponibles"</li>
+<li>"Peux-tu m'aider à créer un nouveau custom node ?"</li>
+<li>"Affiche l'historique de mes générations récentes"</li>
+<li>"Queue un prompt avec le workflow 'default'"</li>
+<li>"Lis le contenu du custom node 'mon_node.py'"</li>
+</ul>
+</div>
+<h3>Activer/Désactiver les Outils</h3>
+<p>Dans le panneau de droite, vous pouvez :</p>
+<ul>
+<li>✅ <strong>Activer les outils MCP</strong> : Le modèle peut utiliser les outils ComfyUI</li>
+<li>❌ <strong>Désactiver les outils MCP</strong> : Le modèle répond uniquement en conversation normale</li>
+</ul>
+<h3>Changer de Modèle</h3>
+<p>Pour utiliser un autre modèle Ollama, éditez le fichier <code>app.py</code> :</p>
+<pre># Ligne 11 dans app.py
+OLLAMA_MODEL = "qwen2.5:7b"  # Remplacez par votre modèle
+
+# Exemples :
+OLLAMA_MODEL = "qwen2.5:14b"
+OLLAMA_MODEL = "llama3.2:3b"
+OLLAMA_MODEL = "mistral:7b"</pre>
+</div>
+<div class="card">
+<h2>🔧 Configuration Avancée</h2>
+<h3>Modifier le Port de Gradio</h3>
+<pre># Dans app.py, à la fin du fichier :
+demo.launch(
+    server_name="127.0.0.1",
+    server_port=7860,  # Changez le port ici
+    share=False
+)</pre>
+<h3>Modifier l'URL du Serveur MCP</h3>
+<pre># Ligne 10 dans app.py
+MCP_SERVER_URL = "http://127.0.0.1:8000"
+
+# Si votre serveur MCP est sur un autre port :
+MCP_SERVER_URL = "http://127.0.0.1:8080"</pre>
+<h3>Activer le Partage Public (Gradio Share)</h3>
+<div class="warning-box">
+<strong>⚠️ Attention</strong> : Cela expose votre interface sur Internet via un lien temporaire Gradio.
+                <pre># Dans app.py
+demo.launch(
+    server_name="127.0.0.1",
+    server_port=7860,
+    share=True  # ⚠️ Génère une URL publique temporaire
+)</pre>
+<p><strong>Ne faites ceci que si vous comprenez les implications de sécurité !</strong></p>
+</div>
+<h3>Utiliser un GPU NVIDIA avec Ollama</h3>
+<pre># Ollama détecte automatiquement votre GPU NVIDIA
+# Vérifier que CUDA est utilisé :
+ollama run qwen2.5:7b
+
+# Dans les logs, vous devriez voir :
+# [CUDA] GPU detected</pre>
+</div>
+<div class="card">
+<h2>❓ Dépannage</h2>
+<h3>❌ Erreur : "Connection refused" (port 11434)</h3>
+<div class="warning-box">
+<p><strong>Problème</strong> : Ollama n'est pas démarré</p>
+<p><strong>Solution</strong> :</p>
+<pre># Démarrer Ollama
+ollama serve
+
+# Ou sur Linux :
+sudo systemctl start ollama</pre>
+</div>
+<h3>❌ Erreur : "No tools available"</h3>
+<div class="warning-box">
+<p><strong>Problème</strong> : Le serveur MCP n'est pas accessible</p>
+<p><strong>Solution</strong> :</p>
+<ol>
+<li>Vérifier que le serveur MCP est démarré (<code>python server.py</code>)</li>
+<li>Tester manuellement : <code>curl http://127.0.0.1:8000/debug/health</code></li>
+<li>Cliquer sur "🔄 Rafraîchir les outils" dans l'interface</li>
+</ol>
+</div>
+<h3>❌ Le modèle ne répond pas / très lent</h3>
+<div class="warning-box">
+<p><strong>Problème</strong> : Modèle trop lourd pour votre machine</p>
+<p><strong>Solution</strong> : Essayez un modèle plus léger</p>
+<pre># Supprimer le modèle lourd
+ollama rm qwen2.5:14b
+
+# Télécharger un modèle plus léger
+ollama pull qwen2.5:3b
+
+# Modifier app.py
+OLLAMA_MODEL = "qwen2.5:3b"</pre>
+</div>
+<h3>❌ Les outils ne sont pas appelés</h3>
+<div class="warning-box">
+<p><strong>Problème</strong> : Le modèle ne supporte pas bien le function calling</p>
+<p><strong>Solution</strong> :</p>
+<ul>
+<li>Utilisez un modèle recommandé : <code>qwen2.5:7b</code>, <code>qwen2.5:14b</code>, ou <code>granite3.1-dense:8b</code></li>
+<li>Soyez plus explicite dans vos questions : "Utilise l'outil list_workflows pour lister mes workflows"</li>
+</ul>
+</div>
+</div>
+
+
+
+<footer style="text-align: center; margin: 40px 0 20px 0; color: #666;">
+<p>ComfyUI MCP Server © 2025</p>
+</footer>
+</div>
+</body>
+</html>

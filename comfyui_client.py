@@ -276,7 +276,18 @@ class ComfyUIClient:
         except Exception as e:
             logger.error(f"Erreur get_history({prompt_id}): {e}")
             return {"status": "error", "message": str(e)}
-    
+   
+    def interrupt(self) -> dict:
+        """Sends an interrupt request to ComfyUI"""
+        try:
+            response = requests.post(f"{self.base_url}/interrupt")
+            response.raise_for_status()
+            logger.info("Interrupt request sent to ComfyUI.")
+            return {"status": "success", "message": "Interrupt request sent"}
+        except Exception as e:
+            logger.error(f"Error sending interrupt request: {e}")
+            return {"status": "error", "message": str(e)}
+   
     async def get_system_stats(self) -> dict:
         """Récupère les stats CPU, RAM, GPU du backend ComfyUI"""
         import aiohttp

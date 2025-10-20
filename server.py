@@ -234,14 +234,9 @@ def get_history(prompt_id: str) -> dict:
     return client.get_history(prompt_id)
 
 @mcp.tool()
-def cancel_prompt(prompt_id: str = "") -> dict:
+def cancel_prompt(prompt_id: str = "") -> dict: # Le prompt_id n'est pas utilisé par l'API interrupt
     """Annule un prompt en cours d'exécution"""
-    try:
-        if hasattr(client, "interrupt"):
-            return client.interrupt()
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-    return {"status": "error", "message": "interrupt non implémenté"}
+    return client.interrupt() # Appelle la nouvelle méthode
 
 @mcp.tool()
 def get_system_stats() -> dict:
@@ -977,27 +972,17 @@ signal.signal(signal.SIGINT, lambda s, f: sys.exit(0))
 signal.signal(signal.SIGTERM, lambda s, f: sys.exit(0))
 
 # ---------------------------------------------------------------------
-# ROUTES DEBUG
+# ROUTE DE DÉBOGAGE (VERSION UNIQUE ET AMÉLIORÉE)
 # ---------------------------------------------------------------------
-
 @mcp.custom_route("/debug/health", methods=["GET"])
 async def debug_health(request: Request):
     import platform
     info = {}
 
     # Chemins utiles
-    try:
-        info["COMFYUI_ROOT"] = str(COMFYUI_ROOT)
-    except Exception:
-        info["COMFYUI_ROOT"] = None
-    try:
-        info["CUSTOM_NODES_DIR"] = str(CUSTOM_NODES_DIR)
-    except Exception:
-        info["CUSTOM_NODES_DIR"] = None
-    try:
-        info["WORKFLOWS_DIR"] = str(WORKFLOWS_DIR)
-    except Exception:
-        info["WORKFLOWS_DIR"] = None
+    info["COMFYUI_ROOT"] = str(COMFYUI_ROOT) if COMFYUI_ROOT else None
+    info["CUSTOM_NODES_DIR"] = str(CUSTOM_NODES_DIR) if CUSTOM_NODES_DIR else None
+    info["WORKFLOWS_DIR"] = str(WORKFLOWS_DIR) if WORKFLOWS_DIR else None
 
     # Versions
     info["python"] = platform.python_version()
@@ -1007,24 +992,17 @@ async def debug_health(request: Request):
     except Exception:
         info["fastmcp"] = "unknown"
 
-    # Compte d'outils enregistrés (robuste aux variations internes)
+    # Compte d'outils enregistrés
     names = set()
     try:
-        for attr in ("tools", "_tools"):
-            reg = getattr(mcp, attr, None)
-            if isinstance(reg, dict):
-                names |= set(reg.keys())
-        tm = getattr(mcp, "_tool_manager", None)
-        if tm:
-            for attr in ("tools", "_tools"):
-                reg = getattr(tm, attr, None)
-                if isinstance(reg, dict):
-                    names |= set(reg.keys())
+        tm = getattr(mcp, "_tool_manager", mcp)
+        names.update(getattr(tm, "tools", {}).keys())
+        names.update(getattr(tm, "_tools", {}).keys())
     except Exception:
         pass
 
     info["tool_count"] = len(names)
-    info["tools_sample"] = sorted(list(names))[:50]  # échantillon pour éviter les pavés
+    info["tools_sample"] = sorted(list(names))[:50]
 
     return JSONResponse({"status": "success", "health": info})
 
